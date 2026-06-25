@@ -1,0 +1,80 @@
+import java.util.Properties
+
+plugins {
+    id("com.android.application")
+}
+
+dependencies {
+    compileOnly ("io.github.libxposed:api:101.0.0")
+}
+
+val properties = Properties()
+val localPropertiesFile = rootProject.file("signature.properties")
+if (localPropertiesFile.exists()) {
+    localPropertiesFile.inputStream().use { stream ->
+        properties.load(stream)
+    }
+}
+
+val verName = providers.exec {
+    commandLine("git", "rev-parse", "--verify", "--short", "HEAD")
+}.standardOutput.asText.get().trim()
+val verCode = providers.exec {
+    commandLine("git", "rev-list", "HEAD", "--count")
+}.standardOutput.asText.get().trim().toInt()
+
+android {
+    namespace = "io.github.xtrlumen.littlehook"
+    buildToolsVersion = "36.0.0"
+    compileSdk = 36
+    defaultConfig {
+        minSdk = 36
+        targetSdk = 36
+        versionCode = verCode
+        versionName = "$verCode-$verName"
+    }
+
+    signingConfigs {
+        create("release") {
+            storeFile = rootProject.file("signature.jks")
+            storePassword = properties.getProperty("KEYSTORE_PASSWORD")
+            keyAlias = properties.getProperty("KEY_ALIAS")
+            keyPassword = properties.getProperty("KEY_PASSWORD")
+        }
+    }
+
+    buildTypes {
+        all {
+            signingConfig = signingConfigs.getByName("release")
+        }
+        debug {
+            versionNameSuffix = "-d"
+        }
+        release {
+            isMinifyEnabled = true
+            vcsInfo.include = false
+            isShrinkResources = true
+            proguardFiles("proguard-rules.pro")
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
+    }
+
+    lint {
+        abortOnError = false
+        checkReleaseBuilds = false
+    }
+
+    dependenciesInfo {
+        includeInApk = false
+    }
+
+    tasks.withType<JavaCompile> {
+        options.compilerArgs.add("-Xlint:deprecation")
+        options.compilerArgs.add("-Xlint:unchecked")
+        options.compilerArgs.add("-Xdiags:verbose")
+    }
+}

@@ -1,0 +1,46 @@
+package io.github.xtrlumen.littlehook;
+
+import android.util.Log;
+
+import io.github.libxposed.api.XposedModule;
+
+public class Entry extends XposedModule {
+    static final String TAG = "LittleHook";
+    static final boolean
+        adb_developer_hide = true,
+        package_installer  = true,
+        splash_screen      = true,
+        leica_theme        = true;
+    @Override
+    public void onModuleLoaded(ModuleLoadedParam param) {
+    }
+    @Override
+    public void onPackageLoaded(PackageLoadedParam param) {
+    }
+    @Override
+    public void onPackageReady(PackageReadyParam param) {
+        String
+            packageName = param.getPackageName(),
+            onTiming = "onPackageReady";
+        switch (packageName) {
+            case "com.miui.securitycore":
+                log(Log.DEBUG, TAG, onTiming + " Loaded into " + packageName);
+                new SecurityCoreMethod().onPackageReady(this, param);
+                break;
+            case "com.android.thememanager":
+                log(Log.DEBUG, TAG, onTiming + " Loaded into " + packageName);
+                new ThemeGlobal().onPackageReady(this, param);
+                break;
+            default:
+                log(Log.DEBUG, TAG, onTiming + " Ignored " + packageName);
+                break;
+        }
+    }
+    @Override
+    public void onSystemServerStarting(SystemServerStartingParam param) {
+        String onTiming = "onSystemServerStarting";
+        log(Log.DEBUG, TAG, onTiming + " Loaded into system");
+        new FrameworkMethod().onSystemServerStarting(this, param);
+        new FrameworkGlobal().onSystemServerStarting(this, param);
+    }
+}
