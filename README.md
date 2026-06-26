@@ -18,6 +18,8 @@
   - 作用域 `system` `com.miui.securitycore`
 - 全局伪装开发者相关选项为关闭
   - 作用域 `system`
+- 禁用系统桌面触碰图标时预加载应用
+  - 作用域 `com.miui.home`
 - 使 Xiaomi 17 Ultra 标准版识别徕卡版定制主题
   - 作用域 `com.android.thememanager`
 

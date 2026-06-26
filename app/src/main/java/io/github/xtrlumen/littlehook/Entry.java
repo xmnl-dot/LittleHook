@@ -9,6 +9,7 @@ public class Entry extends XposedModule {
     static final boolean
         adb_developer_hide = true,
         package_installer  = true,
+        desktop_prestart   = true,
         splash_screen      = true,
         leica_theme        = true;
     @Override
@@ -30,6 +31,10 @@ public class Entry extends XposedModule {
             case "com.android.thememanager":
                 log(Log.DEBUG, TAG, onTiming + " Loaded into " + packageName);
                 new ThemeGlobal().onPackageReady(this, param);
+                break;
+            case "com.miui.home":
+                log(Log.DEBUG, TAG, onTiming + " Loaded into " + packageName);
+                new DesktopGlobal().onPackageReady(this, param);
                 break;
             default:
                 log(Log.DEBUG, TAG, onTiming + " Ignored " + packageName);

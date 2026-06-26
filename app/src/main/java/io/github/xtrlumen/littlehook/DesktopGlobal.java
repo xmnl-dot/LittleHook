@@ -9,32 +9,32 @@ import io.github.libxposed.api.XposedModuleInterface.PackageReadyParam;
 
 import static io.github.xtrlumen.littlehook.Entry.*;
 
-public class ThemeGlobal {
-    private static final String CLASS = "[ThemeGlobal] ";
+public class DesktopGlobal {
+    private static final String CLASS = "[DesktopGlobal] ";
     public void onPackageReady(XposedModule XposedBridge, PackageReadyParam param) {
-        if (!(leica_theme)) {
+        if (!(desktop_prestart)) {
             XposedBridge.log(Log.DEBUG, TAG, CLASS + "Ignored Hook");
             return;
         }
-        if (leica_theme) try {
+        if (desktop_prestart) try {
             Class<?> targetClass = param.getClassLoader().loadClass(
                 "android.os.SystemProperties"
             );
             Method targetMethod = targetClass.getDeclaredMethod(
-                "get",
+                "getBoolean",
                 String.class,
-                String.class
+                Boolean.TYPE
             );
             XposedBridge.hook(targetMethod).intercept(chain -> {
                 Object result = chain.proceed();
-                if ("ro.boot.product.theme_customize".equals(chain.getArg(0))) {
-                    result = "P1_Leica";
-                    XposedBridge.log(Log.DEBUG, TAG, CLASS + "ro.boot.product.theme_customize -> " + result);
+                if ("persist.sys.prestart.proc".equals(chain.getArg(0))) {
+                    result = false;
+                    XposedBridge.log(Log.DEBUG, TAG, CLASS + "persist.sys.prestart.proc -> " + result);
                 }
                 return result;
             });
         } catch (Throwable t) {
-            XposedBridge.log(Log.ERROR, TAG, CLASS + "'android.os.SystemProperties.get' Module Hook failed: ", t);
+            XposedBridge.log(Log.ERROR, TAG, CLASS + "'android.os.SystemProperties.getBoolean' Module Hook failed: ", t);
         }
         XposedBridge.log(Log.DEBUG, TAG, CLASS + "Hooked");
     }
