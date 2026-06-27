@@ -16,8 +16,10 @@ public class ThemeGlobal {
             XposedBridge.log(Log.DEBUG, TAG, CLASS + "Ignored Hook");
             return;
         }
+        ClassLoader classLoader = param.getClassLoader();
+        // 使 Xiaomi 17 Ultra 标准版识别徕卡版定制主题
         if (leica_theme) try {
-            Class<?> targetClass = param.getClassLoader().loadClass(
+            Class<?> targetClass = classLoader.loadClass(
                 "android.os.SystemProperties"
             );
             Method targetMethod = targetClass.getDeclaredMethod(

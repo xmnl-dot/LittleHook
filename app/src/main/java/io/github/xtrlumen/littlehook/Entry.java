@@ -7,11 +7,12 @@ import io.github.libxposed.api.XposedModule;
 public class Entry extends XposedModule {
     static final String TAG = "LittleHook";
     static final boolean
-        adb_developer_hide = true,
-        package_installer  = true,
-        desktop_prestart   = true,
-        splash_screen      = true,
-        leica_theme        = true;
+        disable_flag_secure = true,
+        adb_developer_hide  = true,
+        package_installer   = true,
+        desktop_prestart    = true,
+        splash_screen       = true,
+        leica_theme         = true;
     @Override
     public void onModuleLoaded(ModuleLoadedParam param) {
     }
@@ -24,6 +25,10 @@ public class Entry extends XposedModule {
             packageName = param.getPackageName(),
             onTiming = "onPackageReady";
         switch (packageName) {
+            case "com.android.systemui":
+                log(Log.DEBUG, TAG, onTiming + " Loaded into " + packageName);
+                new SystemUiMethod().onPackageReady(this, param);
+                break;
             case "com.miui.securitycore":
                 log(Log.DEBUG, TAG, onTiming + " Loaded into " + packageName);
                 new SecurityCoreMethod().onPackageReady(this, param);

@@ -22,7 +22,6 @@ import io.github.libxposed.api.XposedModuleInterface.SystemServerStartingParam;
 
 import static io.github.xtrlumen.littlehook.Entry.*;
 
-@SuppressWarnings("deprecation")
 public class FrameworkGlobal {
     private static final String CLASS = "[FrameworkGlobal] ";
     public void onSystemServerStarting(XposedModule XposedBridge, SystemServerStartingParam param) {
@@ -30,6 +29,8 @@ public class FrameworkGlobal {
             XposedBridge.log(Log.DEBUG, TAG, CLASS + "Ignored Hook");
             return;
         }
+        ClassLoader classLoader = param.getClassLoader();
+        // 全局伪装开发者相关选项为关闭
         if (adb_developer_hide) try {
             String notFound = "__NOTFOUND__";
             class SpoofHelper {
@@ -72,7 +73,7 @@ public class FrameworkGlobal {
             }
             SpoofHelper spoofHelper = new SpoofHelper();
 
-            Class<?> transportClass = param.getClassLoader().loadClass(
+            Class<?> transportClass = classLoader.loadClass(
                 "android.content.ContentProvider$Transport"
             );
             for (Method targetMethod : transportClass.getDeclaredMethods()) {

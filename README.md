@@ -18,6 +18,8 @@
   - 作用域 `system` `com.miui.securitycore`
 - 全局伪装开发者相关选项为关闭
   - 作用域 `system`
+- 在不允许截图的应用中强制允许截图
+  - 作用域 `system` `com.android.systemui`
 - 禁用系统桌面触碰图标时预加载应用
   - 作用域 `com.miui.home`
 - 使 Xiaomi 17 Ultra 标准版识别徕卡版定制主题
@@ -26,5 +28,6 @@
 ## 致谢
 - [5ec1cff/MyInjector](https://github.com/5ec1cff/MyInjector)
 - [frknkrc44/HMA-OSS](https://github.com/frknkrc44/HMA-OSS)
+- [LSPosed/DisableFlagSecure](https://github.com/LSPosed/DisableFlagSecure)
 - [GSWXXN/RestoreSplashScreen](https://github.com/GSWXXN/RestoreSplashScreen)
 - [Howard20181/HyperOS_PM_Free_Choose](https://github.com/Howard20181/HyperOS_PM_Free_Choose)
