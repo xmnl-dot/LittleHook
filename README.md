@@ -21,6 +21,8 @@
   - 作用域 `com.android.htmlviewer`
 - 彻底关闭 Splash Screen
   - 作用域 `system`
+- 强制原生文件/照片选择器
+  - 作用域 `system`
 - 恢复并锁定原生软件包安装器
   - 作用域 `system` `com.miui.securitycore`
 - 全局伪装开发者相关选项为关闭
