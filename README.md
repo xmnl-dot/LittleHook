@@ -14,6 +14,8 @@
 ## 功能
 - 禁止自动关闭自启动
   - 作用域 `com.lbe.security.miui`
+- 禁用HTML查看器云控
+  - 作用域 `com.android.htmlviewer`
 - 彻底关闭 Splash Screen
   - 作用域 `system`
 - 恢复并锁定原生软件包安装器
