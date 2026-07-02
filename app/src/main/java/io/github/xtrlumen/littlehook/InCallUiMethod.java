@@ -32,25 +32,39 @@ public class InCallUiMethod {
                 int.class,
                 boolean.class
             );
-            final Class<?> PROCESS_MANAGER = classLoader.loadClass("miui.process.ProcessManager");
-            final Method GET_FOREGROUND_INFO = PROCESS_MANAGER.getDeclaredMethod("getForegroundInfo");
-            GET_FOREGROUND_INFO.setAccessible(true);
+            final Class<?> PROCESS_MANAGER;
+            final Method GET_FOREGROUND_INFO;
+            if (incallui_answer_in_head_up_desktop) {
+                PROCESS_MANAGER = classLoader.loadClass("miui.process.ProcessManager");
+                GET_FOREGROUND_INFO = PROCESS_MANAGER.getDeclaredMethod("getForegroundInfo");
+                GET_FOREGROUND_INFO.setAccessible(true);
+            } else {
+                PROCESS_MANAGER = null;
+                GET_FOREGROUND_INFO = null;
+            }
 
             XposedBridge.hook(targetMethod).intercept(chain -> {
-                boolean fullScreen = (boolean) chain.getArg(3);
-                if (fullScreen) {
-                    Object foregroundInfo = GET_FOREGROUND_INFO.invoke(null);
-                    if (foregroundInfo != null) {
-                        String topPackage = (String) foregroundInfo.getClass().getDeclaredField("mForegroundPackageName").get(foregroundInfo);
-                        if (!"com.miui.home".equals(topPackage)) {
-                            List<Object> Args = chain.getArgs();
-                            Object[] newArgs = Args.toArray();
-                            newArgs[3] = false;
-                            return chain.proceed(newArgs);
+                if (incallui_answer_in_head_up_desktop) {
+                    boolean fullScreen = (boolean) chain.getArg(3);
+                    if (fullScreen) {
+                        Object foregroundInfo = GET_FOREGROUND_INFO.invoke(null);
+                        if (foregroundInfo != null) {
+                            String topPackage = (String) foregroundInfo.getClass().getDeclaredField("mForegroundPackageName").get(foregroundInfo);
+                            if (!"com.miui.home".equals(topPackage)) {
+                                List<Object> Args = chain.getArgs();
+                                Object[] newArgs = Args.toArray();
+                                newArgs[3] = false;
+                                return chain.proceed(newArgs);
+                            }
                         }
                     }
+                    return chain.proceed();
+                } else {
+                    List<Object> Args = chain.getArgs();
+                    Object[] newArgs = Args.toArray();
+                    newArgs[3] = false;
+                    return chain.proceed(newArgs);
                 }
-                return chain.proceed();
             });
         } catch (Throwable t) {
             XposedBridge.log(Log.ERROR, TAG, CLASS + "InCallUi Module Hook failed: ", t);

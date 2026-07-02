@@ -10,6 +10,7 @@ public class Entry extends XposedModule {
         system_settings_unlock_google_header = true,
         html_viewer_disable_cloud_control    = true,
         incallui_answer_in_head_up           = true,
+        incallui_answer_in_head_up_desktop   = false,
         disable_upload_applist               = true,
         disable_flag_secure                  = true,
         disable_root_check                   = true,
