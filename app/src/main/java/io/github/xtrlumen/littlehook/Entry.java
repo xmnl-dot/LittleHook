@@ -12,10 +12,9 @@ public class Entry extends XposedModule {
         incallui_answer_in_head_up           = true,
         disable_upload_applist               = true,
         disable_flag_secure                  = true,
-        disable_root_check                   = false,
+        disable_root_check                   = true,
         adb_developer_hide                   = true,
         native_file_picker                   = true,
-        native_photo_picker                  = false,
         package_installer                    = true,
         desktop_prestart                     = true,
         lbe_auto_start                       = true,
@@ -60,6 +59,10 @@ public class Entry extends XposedModule {
             case "com.miui.home":
                 log(Log.DEBUG, TAG, onTiming + " Loaded into " + packageName);
                 new DesktopGlobal().onPackageReady(this, param);
+                break;
+            case "com.android.photopicker":
+                log(Log.DEBUG, TAG, onTiming + " Loaded into " + packageName);
+                new PhotoPickerMethod().onPackageReady(this, param);
                 break;
             case "com.android.thememanager":
                 log(Log.DEBUG, TAG, onTiming + " Loaded into " + packageName);

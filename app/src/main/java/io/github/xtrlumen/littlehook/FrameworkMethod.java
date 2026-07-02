@@ -27,7 +27,7 @@ import static io.github.xtrlumen.littlehook.Entry.*;
 public class FrameworkMethod {
     private static final String CLASS = "[FrameworkMethod] ";
     public void onSystemServerStarting(XposedModule XposedBridge, SystemServerStartingParam param) {
-        if (!(disable_flag_secure || native_file_picker || native_photo_picker || package_installer || splash_screen)) {
+        if (!(disable_flag_secure || native_file_picker || package_installer || splash_screen)) {
             XposedBridge.log(Log.DEBUG, TAG, CLASS + "Ignored Hook");
             return;
         }
@@ -213,33 +213,6 @@ public class FrameworkMethod {
             });
         } catch (Throwable t) {
             XposedBridge.log(Log.ERROR, TAG, CLASS + "'native_file_picker' Module Hook failed: ", t);
-        }
-        // 强制原生照片选择器
-        if (native_photo_picker) try {
-            Class<?> targetClass = classLoader.loadClass("com.android.server.pm.ComputerEngine");
-            Method targetMethod = targetClass.getDeclaredMethod(
-                "queryIntentActivitiesInternal",
-                Intent.class,
-                String.class,
-                long.class,
-                long.class,
-                int.class,
-                int.class,
-                int.class,
-                boolean.class,
-                boolean.class
-            );
-            XposedBridge.hook(targetMethod).intercept(chain -> {
-                Object result = chain.proceed();
-
-                @SuppressWarnings("unchecked")
-                List<ResolveInfo> list = (List<ResolveInfo>) result;
-                if (list == null) return result;
-
-                return result;
-            });
-        } catch (Throwable t) {
-            XposedBridge.log(Log.ERROR, TAG, CLASS + "'native_photo_picker' Module Hook failed: ", t);
         }
         // 恢复并锁定原生软件包安装器
         if (package_installer) try {
