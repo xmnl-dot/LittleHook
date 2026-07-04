@@ -61,6 +61,16 @@ android {
         }
     }
 
+    packaging {
+        jniLibs {
+            excludes += setOf(
+                "lib/armeabi-v7a/libdexkit.so",
+                "lib/x86/libdexkit.so",
+                "lib/x86_64/libdexkit.so"
+            )
+        }
+    }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_21
         targetCompatibility = JavaVersion.VERSION_21
