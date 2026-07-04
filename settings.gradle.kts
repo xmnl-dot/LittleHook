@@ -6,6 +6,7 @@ pluginManagement {
     plugins {
         id("org.jetbrains.kotlin.android") version "2.0.0"
         id("com.android.application") version "8.13.0"
+        id("com.android.library") version "8.13.0"
     }
 }
 
@@ -18,3 +19,4 @@ dependencyResolutionManagement {
 }
 
 include(":app")
+include(":hidden-api")

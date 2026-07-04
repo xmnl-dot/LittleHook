@@ -1,5 +1,7 @@
 package io.github.xtrlumen.littlehook;
 
+import android.os.SystemProperties;
+
 import android.util.Log;
 
 import java.lang.reflect.Method;
@@ -17,20 +19,28 @@ public class DesktopMethod {
             return;
         }
         // 隐藏最近任务的清理按钮
-        if (desktop_hide_clear_button) try {
-            Class<?> targetClass;
+        if (desktop_hide_clear_button) {
+            Class<?> tmpClass;
             try {
-                targetClass = classLoader.loadClass("com.miui.home.recents.views.RecentsContainer");
-            } catch (ClassNotFoundException ingored) {
-                targetClass = classLoader.loadClass("com.miui.home.recents.views.RecentsDecorations");
+                tmpClass = classLoader.loadClass("com.miui.home.recents.views.RecentsContainer");
+            } catch (ClassNotFoundException ignore1) {
+                try {
+                    tmpClass = classLoader.loadClass("com.miui.home.recents.views.RecentsDecorations");
+                } catch (ClassNotFoundException ignore2) {
+                    return;
+                }
             } catch (Throwable t) {
-                XposedBridge.log(Log.ERROR, TAG, CLASS + "Find Clear Button Display class failed: ", t);
+                XposedBridge.log(Log.ERROR, TAG, CLASS + "Find Recents class failed: ", t);
                 return;
             }
-            Method targetMethod = targetClass.getDeclaredMethod("isClearContainerVisible");
-            XposedBridge.hook(targetMethod).intercept(chain -> false);
-        } catch (Throwable t) {
-            XposedBridge.log(Log.ERROR, TAG, CLASS + "Hide Clear Button Module Hook failed: ", t);
+            final Class<?> TARGET_CLASS = tmpClass;
+
+            if (desktop_hide_clear_button) try {
+                Method targetMethod = TARGET_CLASS.getDeclaredMethod("isClearContainerVisible");
+                XposedBridge.hook(targetMethod).intercept(chain -> false);
+            } catch (Throwable t) {
+                XposedBridge.log(Log.ERROR, TAG, CLASS + "Hide Clear Button Module Hook failed: ", t);
+            }
         }
         XposedBridge.log(Log.DEBUG, TAG, CLASS + "Hooked");
     }
