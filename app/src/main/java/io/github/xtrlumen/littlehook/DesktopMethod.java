@@ -129,6 +129,26 @@ public class DesktopMethod {
                 XposedBridge.log(Log.ERROR, TAG, CLASS + "Display real memory usage Module Hook failed: ", t);
             }
         }
+        // 自定义最近任务界面无后台时显示的文本
+        if (desktop_recent_text) try {
+            Class<?> targetClass = classLoader.loadClass("com.miui.home.recents.views.RecentsView");
+            Method targetMethod = targetClass.getDeclaredMethod(
+                "showEmptyView",
+                int.class
+            );
+            XposedBridge.hook(targetMethod).intercept(chain -> {
+                chain.proceed();
+
+                Field targetField = targetClass.getDeclaredField("mEmptyView");
+                targetField.setAccessible(true);
+                TextView newTextView = (TextView) targetField.get(chain.getThisObject());
+                newTextView.setText(desktop_custom_recent_text);
+
+                return null;
+            });
+        } catch (Throwable t) {
+            XposedBridge.log(Log.ERROR, TAG, CLASS + "Text displayed when the custom Recent interface has no background Module Hook failed: ", t);
+        }
         XposedBridge.log(Log.DEBUG, TAG, CLASS + "Hooked");
     }
 }

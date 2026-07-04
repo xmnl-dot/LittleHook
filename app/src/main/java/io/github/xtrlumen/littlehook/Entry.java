@@ -7,23 +7,26 @@ import io.github.libxposed.api.XposedModule;
 public class Entry extends XposedModule {
     static final String TAG = "LittleHook";
     static final boolean
-        system_settings_unlock_google_header = true,
-        html_viewer_disable_cloud_control    = true,
-        incallui_answer_in_head_up           = true,
-        incallui_answer_in_head_up_desktop   = false,
-        various_fuck_xlDownload              = true,
-        disable_upload_applist               = true,
-        disable_flag_secure                  = true,
-        disable_root_check                   = true,
-        adb_developer_hide                   = true,
-        native_file_picker                   = true,
-        package_installer                    = true,
-        desktop_real_memory_usage            = true,
-        desktop_hide_clear_button            = true,
-        desktop_prestart                     = true,
-        lbe_auto_start                       = true,
-        splash_screen                        = true,
-        leica_theme                          = true;
+        html_viewer_disable_cloud_control    = true,  // 禁用HTML查看器云控
+        incallui_answer_in_head_up           = true,  // 从浮动通知接听电话时不进入全屏
+        incallui_answer_in_head_up_desktop   = false, // 上方附属设置:位于桌面时依旧进入全屏
+        various_fuck_xlDownload              = true,  // 阻止创建.xlDownload文件夹
+        system_settings_unlock_google_header = true,  // 禁止隐藏Google入口
+        leica_theme                          = true,  // 使 Xiaomi 17 Ultra 标准版识别徕卡版定制主题
+        lbe_auto_start                       = true,  // 禁止自动关闭自启动
+        disable_root_check                   = true,  // 禁用环境检查
+        disable_flag_secure                  = true,  // 阻止自动上传已安装应用列表
+        desktop_hide_clear_button            = true,  // 隐藏最近任务界面清理按钮
+        desktop_real_memory_usage            = true,  // 最近任务界面显示内存真实用量
+        desktop_prestart                     = true,  // 禁用系统桌面触碰图标时预加载应用
+        desktop_recent_text                  = true,  // 自定义最近任务界面无后台时显示的文本
+        splash_screen                        = true,  // 彻底关闭 Splash Screen
+        native_file_picker                   = true,  // 全局伪装开发者相关选项为关闭
+        disable_upload_applist               = true,  // 强制原生文件选择器
+        adb_developer_hide                   = true,  // 在不允许截图的应用中强制允许截图
+        package_installer                    = true;  // 恢复并锁定原生软件包安装器
+    static final String
+        desktop_custom_recent_text = "";
     @Override
     public void onModuleLoaded(ModuleLoadedParam param) {
     }
