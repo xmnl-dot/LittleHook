@@ -39,9 +39,7 @@ public class GuardProviderMethod {
             for (MethodData methodData : mCheckRootMethodList) {
                 Method targetMethod = methodData.getMethodInstance(classLoader);
                 XposedBridge.log(Log.DEBUG, TAG, CLASS + "Method Matched: " + targetMethod);
-                XposedBridge.hook(targetMethod).intercept(chain -> {
-                    return false;
-                });
+                XposedBridge.hook(targetMethod).intercept(chain -> false);
             }
         } catch (Throwable t) {
             XposedBridge.log(Log.ERROR, TAG, CLASS + "DisableRootedCheck failed: ", t);
@@ -60,9 +58,7 @@ public class GuardProviderMethod {
             ).get(0).getMethodInstance(classLoader);
             XposedBridge.log(Log.DEBUG, TAG, CLASS + "Target Method Matched: " + mAntiDefraudAppManagerMethod);
             dexIndex.close();
-            XposedBridge.hook(mAntiDefraudAppManagerMethod).intercept(chain -> {
-                return null;
-            });
+            XposedBridge.hook(mAntiDefraudAppManagerMethod).intercept(chain -> null);
         } catch (Throwable t) {
             XposedBridge.log(Log.ERROR, TAG, CLASS + "DisableUploadAppList failed: ", t);
         }

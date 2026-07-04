@@ -31,22 +31,22 @@ public class InCallUiMethod {
                 int.class,
                 boolean.class
             );
-            final Class<?> PROCESS_MANAGER;
-            final Method GET_FOREGROUND_INFO;
+            Class<?> processManager;
+            Method getForegroundInfo;
             if (incallui_answer_in_head_up_desktop) {
-                PROCESS_MANAGER = classLoader.loadClass("miui.process.ProcessManager");
-                GET_FOREGROUND_INFO = PROCESS_MANAGER.getDeclaredMethod("getForegroundInfo");
-                GET_FOREGROUND_INFO.setAccessible(true);
+                processManager = classLoader.loadClass("miui.process.ProcessManager");
+                getForegroundInfo = processManager.getDeclaredMethod("getForegroundInfo");
+                getForegroundInfo.setAccessible(true);
             } else {
-                PROCESS_MANAGER = null;
-                GET_FOREGROUND_INFO = null;
+                processManager = null;
+                getForegroundInfo = null;
             }
 
             XposedBridge.hook(targetMethod).intercept(chain -> {
                 if (incallui_answer_in_head_up_desktop) {
                     boolean fullScreen = (boolean) chain.getArg(3);
                     if (fullScreen) {
-                        Object foregroundInfo = GET_FOREGROUND_INFO.invoke(null);
+                        Object foregroundInfo = getForegroundInfo.invoke(null);
                         if (foregroundInfo != null) {
                             String topPackage = (String) foregroundInfo.getClass().getDeclaredField("mForegroundPackageName").get(foregroundInfo);
                             if (!"com.miui.home".equals(topPackage)) {

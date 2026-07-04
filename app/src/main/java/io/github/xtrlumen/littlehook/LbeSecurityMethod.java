@@ -26,9 +26,7 @@ public class LbeSecurityMethod {
                 Context.class,
                 boolean.class
             );
-            XposedBridge.hook(targetMethod).intercept(chain -> {
-                return null;
-            });
+            XposedBridge.hook(targetMethod).intercept(chain -> null);
         } catch (Throwable t) {
             XposedBridge.log(Log.ERROR, TAG, CLASS + "Prohibit auto close AutoStart permission Module Hook failed: ", t);
         }
