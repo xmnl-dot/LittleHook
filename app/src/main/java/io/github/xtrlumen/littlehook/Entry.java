@@ -24,7 +24,8 @@ public class Entry extends XposedModule {
         native_file_picker                   = true,  // 全局伪装开发者相关选项为关闭
         disable_upload_applist               = true,  // 强制原生文件选择器
         adb_developer_hide                   = true,  // 在不允许截图的应用中强制允许截图
-        package_installer                    = true;  // 恢复并锁定原生软件包安装器
+        package_installer                    = true,  // 恢复并锁定原生软件包安装器
+        show_color_advanced                  = true;  // 显示色彩风格高级模式
     static final String
         desktop_custom_recent_text = "";
     @Override

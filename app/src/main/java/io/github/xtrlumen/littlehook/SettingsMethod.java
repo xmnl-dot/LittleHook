@@ -17,7 +17,7 @@ public class SettingsMethod {
     private static final String CLASS = "[SettingsMethod] ";
 
     public void onPackageReady(XposedModule XposedBridge, PackageReadyParam param, ClassLoader classLoader) {
-        if (!(system_settings_unlock_google_header)) {
+        if (!(system_settings_unlock_google_header || show_color_advanced)) {
             XposedBridge.log(Log.DEBUG, TAG, CLASS + "Ignored Hook");
             return;
         }
@@ -45,6 +45,28 @@ public class SettingsMethod {
         } catch (Throwable t) {
             XposedBridge.log(Log.ERROR, TAG, CLASS + "Prohibit hide Google entry Module Hook failed: ", t);
         }
+        // 显示色彩风格高级模式
+        if (show_color_advanced) {
+            hookShowColorAdvancedMode(XposedBridge, classLoader);
+        }
         XposedBridge.log(Log.DEBUG, TAG, CLASS + "Hooked");
+    }
+
+    /**
+     * 显示色彩风格高级模式
+     * Hook isSupportSimplifiedColormode -> false, 解锁完整色彩模式选项
+     */
+    private void hookShowColorAdvancedMode(XposedModule XposedBridge, ClassLoader classLoader) {
+        try {
+            Class<?> screenEffect = classLoader.loadClass("com.android.settings.display.ScreenEffectFragment");
+            Method m = screenEffect.getDeclaredMethod("isSupportSimplifiedColormode");
+            XposedBridge.hook(m).intercept(chain -> {
+                XposedBridge.log(Log.DEBUG, TAG, CLASS + "isSupportSimplifiedColormode -> false");
+                return false;
+            });
+            XposedBridge.log(Log.DEBUG, TAG, CLASS + "Hooked isSupportSimplifiedColormode");
+        } catch (Throwable t) {
+            XposedBridge.log(Log.ERROR, TAG, CLASS + "hookShowColorAdvancedMode failed: ", t);
+        }
     }
 }

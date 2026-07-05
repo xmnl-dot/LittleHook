@@ -47,17 +47,16 @@ android {
     }
 
     buildTypes {
-        all {
-            signingConfig = signingConfigs.getByName("release")
-        }
         debug {
             versionNameSuffix = "-d"
+            signingConfig = signingConfigs.getByName("release")
         }
         release {
             isMinifyEnabled = true
             vcsInfo.include = false
             isShrinkResources = true
             proguardFiles("proguard-rules.pro")
+            signingConfig = signingConfigs.getByName("release")
         }
     }
 
