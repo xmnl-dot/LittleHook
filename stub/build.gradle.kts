@@ -3,7 +3,7 @@ plugins {
 }
 
 android {
-    namespace = "io.github.xtrlumen.hidden.api"
+    namespace = "android"
     buildToolsVersion = "36.0.0"
     compileSdk = 36
     defaultConfig {

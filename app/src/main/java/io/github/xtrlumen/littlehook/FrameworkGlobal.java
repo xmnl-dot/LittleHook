@@ -1,5 +1,7 @@
 package io.github.xtrlumen.littlehook;
 
+import android.content.AttributionSource;
+
 import android.util.Log;
 
 import android.net.Uri;
@@ -33,23 +35,12 @@ public class FrameworkGlobal {
         if (adb_developer_hide) try {
             String notFound = "__NOTFOUND__";
             class SpoofHelper {
-                private Method getPackageNameMethod;
-                private String getCallerPackageName(Object attrSource) {
-                    try {
-                        if (getPackageNameMethod == null) {
-                            getPackageNameMethod = attrSource.getClass().getMethod("getPackageName");
-                        }
-                        return (String) getPackageNameMethod.invoke(attrSource);
-                    } catch (Throwable ignored) {
-                        return null;
-                    }
-                }
                 final Set<String> WHITELIST = Set.of(
                     "com.android.shell",
                     "android",
                     "root"
                 );
-                private boolean findSkipApp(String caller) {
+                private boolean diffSkipApp(String caller) {
                     return WHITELIST.contains(caller);
                 }
                 final String[][] DEV_OPTIONS_SPOOF = {
@@ -61,7 +52,7 @@ public class FrameworkGlobal {
                     {"global", "hidden_api_policy_pre_p_apps", null},
                     {"global", "hidden_api_policy_blacklist_exemptions", null},
                 };
-                private String findSpoofValue(String database, String prop) {
+                private String getSpoofValue(String database, String prop) {
                     for (String[] entry : DEV_OPTIONS_SPOOF) {
                         if (entry[0].equals(database) && entry[1].equals(prop)) {
                             return entry[2];
@@ -78,11 +69,11 @@ public class FrameworkGlobal {
                 // 拦截 Settings 单个/列表
                 if ("query".equals(methodName)) {
                     XposedBridge.hook(targetMethod).intercept(chain -> {
-                        String caller = spoofHelper.getCallerPackageName(chain.getArg(0));
-                        if (caller == null || spoofHelper.findSkipApp(caller)) return chain.proceed();
+                        String caller = ((AttributionSource) chain.getArg(0)).getPackageName();
+                        if (spoofHelper.diffSkipApp(caller)) return chain.proceed();
 
                         Uri uri = (Uri) chain.getArg(1);
-                        if (uri == null || !"settings".equals(uri.getAuthority())) return chain.proceed();
+                        if (!("settings".equals(uri.getAuthority()))) return chain.proceed();
 
                         List<String> segments = uri.getPathSegments();
                         if (segments.isEmpty()) return chain.proceed();
@@ -90,7 +81,7 @@ public class FrameworkGlobal {
                         String database = segments.get(0);
                         if (segments.size() >= 2) {
                             String prop = segments.get(1);
-                            String spoofed = spoofHelper.findSpoofValue(database, prop);
+                            String spoofed = spoofHelper.getSpoofValue(database, prop);
                             if (!notFound.equals(spoofed)) {
                                 XposedBridge.log(Log.DEBUG, TAG, CLASS + "caller: " + caller + ", " + "spoofed " + database + " " + prop + "=" + spoofed);
                                 return new MatrixCursor(new String[]{"name", "value"}, 1) {{
@@ -112,7 +103,7 @@ public class FrameworkGlobal {
                             while (cursor.moveToNext()) {
                                 String prop = cursor.getString(cursor.getColumnIndex("name"));
                                 keyCol.add(prop);
-                                String spoofed = spoofHelper.findSpoofValue(database, prop);
+                                String spoofed = spoofHelper.getSpoofValue(database, prop);
                                 valCol.add(!notFound.equals(spoofed) ? spoofed : cursor.getString(cursor.getColumnIndex("value")));
                                 for (String col : columns.keySet()) {
                                     if ("name".equals(col) || "value".equals(col)) continue;
@@ -138,8 +129,8 @@ public class FrameworkGlobal {
                 // 拦截 GET_global / GET_secure / GET_system
                 if ("call".equals(methodName)) {
                     XposedBridge.hook(targetMethod).intercept(chain -> {
-                        String caller = spoofHelper.getCallerPackageName(chain.getArg(0));
-                        if (caller == null || spoofHelper.findSkipApp(caller)) return chain.proceed();
+                        String caller = ((AttributionSource) chain.getArg(0)).getPackageName();
+                        if (spoofHelper.diffSkipApp(caller)) return chain.proceed();
 
                         String callMethod = (String) chain.getArg(2);
                         String database;
@@ -156,9 +147,9 @@ public class FrameworkGlobal {
                             default:
                                 return chain.proceed();
                         }
-
                         String prop = (String) chain.getArg(3);
-                        String spoofed = spoofHelper.findSpoofValue(database, prop);
+
+                        String spoofed = spoofHelper.getSpoofValue(database, prop);
                         if (!notFound.equals(spoofed)) {
                             Bundle bundle = new Bundle();
                             bundle.putString("value", spoofed);
