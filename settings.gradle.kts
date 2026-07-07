@@ -19,4 +19,4 @@ dependencyResolutionManagement {
 }
 
 include(":app")
-include(":hidden-api")
+include(":stub")

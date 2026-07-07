@@ -7,7 +7,7 @@ plugins {
 
 dependencies {
     compileOnly ("io.github.libxposed:api:101.0.0")
-    compileOnly(project(":hidden-api"))
+    compileOnly(project(":stub"))
     implementation("org.luckypray:dexkit:2.2.0")
 }
 
